@@ -18,3 +18,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # copy project
 COPY . .
+
+#port from the container to expose to host
+EXPOSE 8000
+
+CMD /app/start.sh
