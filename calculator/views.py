@@ -3,8 +3,8 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from django.contrib.auth import get_user_model # If used custom user model
 from rest_framework.response import Response
 
-from .models import Profile, PhysicalActivity
-from .serializers import UserSerializer, ProfileSerializer, PhysicalActivitySerializer
+from .models import Profile, PhysicalActivity, EatingCategory
+from .serializers import UserSerializer, ProfileSerializer, PhysicalActivitySerializer, EatingCategorySerializer
 
 
 class CreateUserView(CreateAPIView):
@@ -54,3 +54,12 @@ class ProfileViewSet(viewsets.ModelViewSet):
         validated_data["user_id"] = user.id
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class EatingCategoryViewSet(viewsets.ModelViewSet):
+    model = EatingCategory
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = EatingCategorySerializer
+    queryset = EatingCategory.objects.all()

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model  # If used custom user model
 from rest_framework_simplejwt.tokens import RefreshToken
-from calculator.models import Profile, PhysicalActivity
+from calculator.models import Profile, PhysicalActivity, EatingCategory
 
 UserModel = get_user_model()
 
@@ -57,3 +57,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def get_user(self, obj):
         return UserSerializer(obj.user)
+
+
+class EatingCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EatingCategory
+        fields = '__all__'
