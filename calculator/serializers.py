@@ -41,6 +41,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             width=validated_data['width'],
             height=validated_data['height'],
             birth_date=validated_data['birth_date'],
+            sex=validated_data['sex'],
         )
         return profile
 
