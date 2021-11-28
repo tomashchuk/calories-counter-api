@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model  # If used custom user model
 from rest_framework_simplejwt.tokens import RefreshToken
-from calculator.models import Profile
+from calculator.models import Profile, PhysicalActivity
 
 UserModel = get_user_model()
 
@@ -29,6 +29,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_is_ready(self, obj):
         return bool(Profile.objects.filter(user_id=obj.id).first())
+
+
+class PhysicalActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PhysicalActivity
+        fields = '__all__'
 
 
 class ProfileSerializer(serializers.ModelSerializer):

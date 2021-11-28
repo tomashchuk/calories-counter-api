@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 
 from model_utils import FieldTracker
 
+from calculator.utils import calculate_dci
+
 
 class PhysicalActivity(models.Model):
     name = models.CharField(max_length=100)
@@ -19,6 +21,8 @@ class Profile(models.Model):
     height = models.PositiveIntegerField()
     birth_date = models.DateField()
 
+    calories_norm = models.PositiveIntegerField()
+
     tracker = FieldTracker()
 
     @property
@@ -26,8 +30,7 @@ class Profile(models.Model):
         return datetime.now().date() - self.birth_date
 
     def save(self, *args, **kwargs):
-        if self.tracker.has_changed("width") or self.tracker.has_changed("height"):
-            pass
+        self.calories_norm = round(calculate_dci())
         super(Profile, self).save(*args, **kwargs)
 
 

@@ -3,8 +3,8 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from django.contrib.auth import get_user_model # If used custom user model
 from rest_framework.response import Response
 
-from .models import Profile
-from .serializers import UserSerializer, ProfileSerializer
+from .models import Profile, PhysicalActivity
+from .serializers import UserSerializer, ProfileSerializer, PhysicalActivitySerializer
 
 
 class CreateUserView(CreateAPIView):
@@ -27,12 +27,22 @@ class RetrieveUserView(RetrieveAPIView):
         return Response(self.get_serializer(request.user).data)
 
 
+class PhysicalActivityViewSet(viewsets.ModelViewSet):
+    model = PhysicalActivity
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = PhysicalActivitySerializer
+    queryset = PhysicalActivity.objects.all()
+
+
 class ProfileViewSet(viewsets.ModelViewSet):
     model = Profile
     permission_classes = [
         permissions.IsAuthenticated
     ]
     serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
