@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model  # If used custom user model
 from rest_framework_simplejwt.tokens import RefreshToken
-from calculator.models import Profile, PhysicalActivity, EatingCategory
+from calculator.models import Profile, PhysicalActivity, EatingCategory, FoodCategory, FoodItem, WaterEvent
 
 UserModel = get_user_model()
 
@@ -38,28 +38,49 @@ class PhysicalActivitySerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
+    user = UserSerializer(read_only=True, required=False)
+
+    birth_date = serializers.DateField(required=False)
+    sex = serializers.CharField(required=False)
+    physical_activity = serializers.PrimaryKeyRelatedField(queryset=PhysicalActivity.objects.all(), required=False)
 
     def create(self, validated_data):
 
         profile = Profile.objects.create(
             user_id=validated_data["user_id"],
-            width=validated_data['width'],
+            weight=validated_data['weight'],
             height=validated_data['height'],
             birth_date=validated_data['birth_date'],
             sex=validated_data['sex'],
+            physical_activity_id=validated_data["physical_activity"].id
         )
+        profile.save()
         return profile
 
     class Meta:
         model = Profile
         fields = '__all__'
 
-    def get_user(self, obj):
-        return UserSerializer(obj.user)
-
 
 class EatingCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = EatingCategory
+        fields = '__all__'
+
+
+class FoodCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FoodCategory
+        fields = '__all__'
+
+
+class FoodItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FoodItem
+        fields = '__all__'
+
+
+class WaterEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WaterEvent
         fields = '__all__'

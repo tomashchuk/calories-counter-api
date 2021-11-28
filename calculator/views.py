@@ -3,8 +3,9 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from django.contrib.auth import get_user_model # If used custom user model
 from rest_framework.response import Response
 
-from .models import Profile, PhysicalActivity, EatingCategory
-from .serializers import UserSerializer, ProfileSerializer, PhysicalActivitySerializer, EatingCategorySerializer
+from .models import Profile, PhysicalActivity, EatingCategory, FoodCategory, WaterEvent
+from .serializers import UserSerializer, ProfileSerializer, PhysicalActivitySerializer, EatingCategorySerializer, \
+    FoodCategorySerializer, WaterEventSerializer
 
 
 class CreateUserView(CreateAPIView):
@@ -52,8 +53,19 @@ class ProfileViewSet(viewsets.ModelViewSet):
             return Response({"message": "User already has profile"})
         validated_data = serializer.validated_data
         validated_data["user_id"] = user.id
+        serializer.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        # make sure to catch 404's below
+        obj = queryset.filter(user_id=self.request.user.id).first()
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
 
 
 class EatingCategoryViewSet(viewsets.ModelViewSet):
@@ -63,3 +75,24 @@ class EatingCategoryViewSet(viewsets.ModelViewSet):
     ]
     serializer_class = EatingCategorySerializer
     queryset = EatingCategory.objects.all()
+
+
+class FoodCategoryViewSet(viewsets.ModelViewSet):
+    model = FoodCategory
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = FoodCategorySerializer
+    queryset = FoodCategory.objects.all()
+
+
+class WaterEventViewSet(viewsets.ModelViewSet):
+    model = WaterEvent
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = WaterEventSerializer
+    queryset = WaterEvent.objects.all()
+
+    def get_queryset(self):
+        return self.queryset.filter(profile=Profile.objects.get(user_id=self.request.user.id))
