@@ -6,7 +6,12 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 from model_utils import FieldTracker
 
-from calculator.utils import calculate_dci, FATS_PERCENTAGE_FROM_DCI, PROTEIN_PERCENTAGE_FROM_DCI, calculate_water_norm
+from calculator.utils import (
+    calculate_dci,
+    FATS_PERCENTAGE_FROM_DCI,
+    PROTEIN_PERCENTAGE_FROM_DCI,
+    calculate_water_norm,
+)
 
 
 class PhysicalActivity(models.Model):
@@ -14,7 +19,9 @@ class PhysicalActivity(models.Model):
     coef = models.DecimalField(decimal_places=3, max_digits=5)
 
     class Meta:
-        ordering = ['coef', ]
+        ordering = [
+            "coef",
+        ]
 
     def __str__(self):
         return self.name
@@ -23,7 +30,9 @@ class PhysicalActivity(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     physical_activity = models.ForeignKey(PhysicalActivity, on_delete=models.PROTECT)
-    sex = models.CharField(max_length=10, choices=(("male", "male"), ("female", "female")))
+    sex = models.CharField(
+        max_length=10, choices=(("male", "male"), ("female", "female"))
+    )
     weight = models.PositiveIntegerField()
     height = models.PositiveIntegerField()
     birth_date = models.DateField()
@@ -51,13 +60,19 @@ class Profile(models.Model):
 
 class EatingCategory(models.Model):
     options = (
-        ('breakfast', 'breakfast'),
-        ('lunch', 'lunch'),
-        ('dinner', 'dinner'),
-        ('snacks', 'snacks'),
+        ("Breakfast", "Breakfast"),
+        ("Lunch", "Lunch"),
+        ("Dinner", "Dinner"),
+        ("Snacks", "Snacks"),
     )
-    name = models.CharField(max_length=50, choices=options)
+    name = models.CharField(max_length=50, choices=options, unique=True)
     # image = models.ImageField(upload_to="eating-category")
+    order = models.IntegerField(default=1, null=True, blank=True)
+
+    class Meta:
+        ordering = [
+            "order",
+        ]
 
     def __str__(self):
         return self.name
@@ -65,13 +80,15 @@ class EatingCategory(models.Model):
 
 class FoodCategory(MPTTModel):
     name = models.CharField(max_length=50, unique=True)
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.PROTECT)
+    parent = TreeForeignKey(
+        "self", null=True, blank=True, related_name="children", on_delete=models.PROTECT
+    )
 
     class MPTTMeta:
-        order_insertion_by = ['name']
+        order_insertion_by = ["name"]
 
     class Meta:
-        verbose_name_plural = 'food_categories'
+        verbose_name_plural = "food_categories"
 
     def __str__(self):
         return self.name
@@ -96,11 +113,19 @@ class WaterEvent(models.Model):
     quantity = models.IntegerField(default=1, null=True, blank=True)
 
     class Meta:
-        ordering = ['-created', ]
+        ordering = [
+            "-created",
+        ]
 
 
 class FoodEvent(models.Model):
     eating_category = models.ForeignKey(EatingCategory, on_delete=models.PROTECT)
     food_item = models.ForeignKey(FoodItem, on_delete=models.PROTECT)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
+    quantity = models.IntegerField(default=1, null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+
+    class Meta:
+        ordering = [
+            "-created",
+        ]

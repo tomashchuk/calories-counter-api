@@ -1,5 +1,5 @@
 FROM nickgryg/alpine-pandas
-
+#FROM python:3.10-alpine
 WORKDIR /app
 
 # set environment variables
