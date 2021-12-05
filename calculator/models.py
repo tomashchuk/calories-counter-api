@@ -26,7 +26,7 @@ class PhysicalActivity(models.Model):
     def __str__(self):
         return self.name
 
-
+#Profile model
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     physical_activity = models.ForeignKey(PhysicalActivity, on_delete=models.PROTECT)
@@ -57,7 +57,7 @@ class Profile(models.Model):
         self.water_norm = round(calculate_water_norm(self))
         super(Profile, self).save(*args, **kwargs)
 
-
+#Eating category model
 class EatingCategory(models.Model):
     options = (
         ("Breakfast", "Breakfast"),
@@ -77,7 +77,7 @@ class EatingCategory(models.Model):
     def __str__(self):
         return self.name
 
-
+#Food category model
 class FoodCategory(MPTTModel):
     name = models.CharField(max_length=50, unique=True)
     parent = TreeForeignKey(
@@ -93,7 +93,7 @@ class FoodCategory(MPTTModel):
     def __str__(self):
         return self.name
 
-
+#Food item model
 class FoodItem(models.Model):
     name = models.CharField(max_length=200)
     category = TreeForeignKey(FoodCategory, on_delete=models.CASCADE)
@@ -106,7 +106,7 @@ class FoodItem(models.Model):
     def __str__(self):
         return self.name
 
-
+#Water event model
 class WaterEvent(models.Model):
     created = models.DateTimeField(auto_created=True)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
@@ -117,7 +117,7 @@ class WaterEvent(models.Model):
             "-created",
         ]
 
-
+#Food event model
 class FoodEvent(models.Model):
     eating_category = models.ForeignKey(EatingCategory, on_delete=models.PROTECT)
     food_item = models.ForeignKey(FoodItem, on_delete=models.PROTECT)
