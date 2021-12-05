@@ -1,5 +1,5 @@
 FROM nickgryg/alpine-pandas
-#FROM python:3.10-alpine
+
 WORKDIR /app
 
 # set environment variables
@@ -22,4 +22,5 @@ COPY . .
 #port from the container to expose to host
 EXPOSE 8000
 
+#run 
 CMD /app/start.sh
