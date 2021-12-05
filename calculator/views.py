@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django.db.models import Sum
 from rest_framework import permissions, viewsets, status
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
@@ -147,25 +149,41 @@ class StatisticsView(APIView):
     def get(self, request, format=None):
         today_end = None
         start_day = None
+        result = None
         period = request.query_params.get("period")
         if period == "today":
             start_day, today_end = get_dates_for_today_filtering()
+            result = (
+                FoodEvent.objects.values("eating_category_id").filter(
+                    profile=Profile.objects.get(user_id=request.user.id),
+                    created__lte=today_end,
+                    created__gte=start_day,
+                ).annotate(
+                    Sum("food_item__calorie"),
+                    Sum("food_item__fats"),
+                    Sum("food_item__protein"),
+                    Sum("food_item__carbohydrate"),
+                ).order_by()
+            )
         elif period == "week":
             start_day, today_end = get_dates_for_week_filtering()
-        result = (
-            FoodEvent.objects.values("eating_category_id")
-            .filter(
+            result_food = (
+                FoodEvent.objects.values("created__date").filter(
+                    profile=Profile.objects.get(user_id=request.user.id),
+                    created__lte=today_end,
+                    created__gte=start_day,
+                ).annotate(
+                    Sum("food_item__calorie"),
+                    Sum("food_item__fats"),
+                    Sum("food_item__protein"),
+                    Sum("food_item__carbohydrate"),
+                ).order_by()
+            )
+            result_water = WaterEvent.objects.values("created__date").filter(
                 profile=Profile.objects.get(user_id=request.user.id),
                 created__lte=today_end,
-                created__gte=start_day,
-            )
-            .annotate(
-                Sum("food_item__calorie"),
-                Sum("food_item__fats"),
-                Sum("food_item__protein"),
-                Sum("food_item__carbohydrate"),
-            )
-            .order_by()
-        )
+                created__gte=start_day,).annotate(Sum("quantity"),)\
+                .order_by()
+            result = list(chain(result_food, result_water))
 
         return Response(result)
