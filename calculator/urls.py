@@ -12,7 +12,7 @@ from .views import (
     FoodEventViewSet,
     StatisticsView,
 )
-
+#init base endpoints
 urlpatterns = [
     path("register/", CreateUserView.as_view()),
     path("user-info/", RetrieveUserView.as_view()),
