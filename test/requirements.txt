@@ -1,0 +1,6 @@
+pytest
+pytest-django
+git+git://github.com/mverteuil/pytest-ipdb.git
+pytest-cov
+mixer
+mock

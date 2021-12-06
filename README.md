@@ -1,4 +1,5 @@
 #Calories Counter API
+API to serve mobile app. 
 
 Run `docker-compose up -d --build` to create images
 

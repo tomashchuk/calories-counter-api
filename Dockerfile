@@ -10,10 +10,13 @@ ENV PYTHONUNBUFFERED 1
 RUN apk update \
     && apk add postgresql-dev gcc python3-dev musl-dev zlib-dev
 
+# RUN apt-y update && apt install -y libzbar-dev
+
 # install dependencies
 COPY requirements.txt /app/requirements.txt
+COPY requirements.txt /app/test/requirements.txt
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt -r test/requirements.txt
 
 
 # copy project

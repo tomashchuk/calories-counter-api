@@ -125,6 +125,7 @@ JWT_AUTH = {
     "JWT_EXPIRATION_DELTA": datetime.timedelta(days=20),
     # allow refreshing of tokens
     "JWT_ALLOW_REFRESH": True,
+    'JWT_VERIFY_EXPIRATION': False,
     # this is the maximum time AFTER the token was issued that
     # it can be refreshed.  exprired tokens can't be refreshed.
     "JWT_REFRESH_EXPIRATION_DELTA": datetime.timedelta(days=30),
@@ -141,7 +142,7 @@ SWAGGER_SETTINGS = {
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Kiev"
 
 USE_I18N = True
 

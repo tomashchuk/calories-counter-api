@@ -28,6 +28,7 @@ class PhysicalActivity(models.Model):
 
 
 class Profile(models.Model):
+    """User profile representation. Recalculates needed fats ... on each saving"""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     physical_activity = models.ForeignKey(PhysicalActivity, on_delete=models.PROTECT)
     sex = models.CharField(
@@ -59,6 +60,7 @@ class Profile(models.Model):
 
 
 class EatingCategory(models.Model):
+    """Eating category representation"""
     options = (
         ("Breakfast", "Breakfast"),
         ("Lunch", "Lunch"),
@@ -79,6 +81,7 @@ class EatingCategory(models.Model):
 
 
 class FoodCategory(MPTTModel):
+    """Tree representation of general food category"""
     name = models.CharField(max_length=50, unique=True)
     parent = TreeForeignKey(
         "self", null=True, blank=True, related_name="children", on_delete=models.PROTECT
@@ -95,6 +98,7 @@ class FoodCategory(MPTTModel):
 
 
 class FoodItem(models.Model):
+    """Represents food. Includes common info about food item"""
     name = models.CharField(max_length=200)
     category = TreeForeignKey(FoodCategory, on_delete=models.CASCADE)
     carbohydrate = models.DecimalField(max_digits=5, decimal_places=2, default=0)
@@ -108,6 +112,10 @@ class FoodItem(models.Model):
 
 
 class WaterEvent(models.Model):
+    """
+    Water Event representation
+    ordering: -created
+    """
     created = models.DateTimeField(auto_created=True)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1, null=True, blank=True)
@@ -119,6 +127,9 @@ class WaterEvent(models.Model):
 
 
 class FoodEvent(models.Model):
+    """
+    Water Event representation
+    """
     eating_category = models.ForeignKey(EatingCategory, on_delete=models.PROTECT)
     food_item = models.ForeignKey(FoodItem, on_delete=models.PROTECT)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
